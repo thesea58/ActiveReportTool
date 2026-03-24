@@ -1,5 +1,5 @@
-﻿using RpxCodeGenerator.Core.Generators;
-using RpxCodeGenerator.Core.Parsers;
+﻿using RpxCodeGenerator.Generators;
+using RpxCodeGenerator.Parsers;
 
 // Configuration
 const string rpxDirectory = "./rpx_folder";

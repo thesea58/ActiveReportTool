@@ -13,11 +13,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="output\" />
-    <Folder Include="Parsers\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\RpxCodeGenerator.Core\RpxCodeGenerator.Core.csproj" />
   </ItemGroup>
 
 </Project>

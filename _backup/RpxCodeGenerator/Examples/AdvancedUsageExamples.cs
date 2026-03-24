@@ -1,6 +1,6 @@
-using RpxCodeGenerator.Core.Generators;
-using RpxCodeGenerator.Core.Models;
-using RpxCodeGenerator.Core.Parsers;
+using RpxCodeGenerator.Generators;
+using RpxCodeGenerator.Models;
+using RpxCodeGenerator.Parsers;
 
 namespace RpxCodeGenerator.Examples;
 
