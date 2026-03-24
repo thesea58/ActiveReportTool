@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RpxCodeGenerator")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cd8525195067ba4850a812f709a8b9320ac6286")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+44dc6e70da9af92c0391659c106504bd4084ffd7")]
 [assembly: System.Reflection.AssemblyProductAttribute("RpxCodeGenerator")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RpxCodeGenerator")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

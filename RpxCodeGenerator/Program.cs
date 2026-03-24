@@ -5,10 +5,11 @@ using RpxCodeGenerator.Parsers;
 const string rpxDirectory = "../rpx_folder_only";
 const string outputDirectory = "./output";
 
-// Optional input argument: specific RPX file name or full path
-// Example:
-//   dotnet run -- KP031110.rpx
-//   dotnet run -- ../rpx_folder_only/KP031110.rpx
+// Optional input argument: absolute path of an RPX file or a folder containing RPX files.
+// If omitted, all RPX files in the hardcoded rpxDirectory will be processed.
+// Examples:
+//   dotnet run -- /absolute/path/to/KP031110.rpx
+//   dotnet run -- /absolute/path/to/rpx_folder
 string? inputArg = args.Length > 0 ? args[0] : null;
 
 // Create output directory if not exists
@@ -49,28 +50,43 @@ try
     List<string> filesToProcess;
     if (!string.IsNullOrWhiteSpace(inputArg))
     {
-        var candidatePath = inputArg;
-        if (!Path.IsPathRooted(candidatePath))
-        {
-            candidatePath = Path.Combine(rpxDirectory, candidatePath);
-        }
+        var resolvedPath = Path.GetFullPath(inputArg);
 
-        candidatePath = Path.GetFullPath(candidatePath);
-        if (!File.Exists(candidatePath))
+        if (Directory.Exists(resolvedPath))
         {
-            Console.WriteLine($"❌ RPX file not found: {inputArg}");
-            Console.WriteLine($"   Checked path: {candidatePath}");
+            // Argument is a folder — process all RPX files inside it
+            filesToProcess = Directory.GetFiles(resolvedPath, "*.rpx")
+                .OrderBy(f => Path.GetFileName(f))
+                .ToList();
+
+            if (filesToProcess.Count == 0)
+            {
+                Console.WriteLine($"❌ No RPX files found in folder: {resolvedPath}");
+                return;
+            }
+
+            Console.WriteLine($"📂 Folder mode: {resolvedPath} ({filesToProcess.Count} files)");
+            Console.WriteLine();
+        }
+        else if (File.Exists(resolvedPath))
+        {
+            // Argument is a single file
+            filesToProcess = [resolvedPath];
+            Console.WriteLine($"🎯 Single-file mode: {Path.GetFileName(resolvedPath)}");
+            Console.WriteLine();
+        }
+        else
+        {
+            Console.WriteLine($"❌ Path not found: {resolvedPath}");
             return;
         }
-
-        filesToProcess = [candidatePath];
-        Console.WriteLine($"🎯 Single-file mode: {Path.GetFileName(candidatePath)}");
-        Console.WriteLine();
     }
     else
     {
-        // Default demo mode
-        filesToProcess = rpxFiles.Take(5).ToList();
+        // Default: all RPX files in the hardcoded directory
+        filesToProcess = rpxFiles;
+        Console.WriteLine($"📁 Processing all {filesToProcess.Count} files in default directory.");
+        Console.WriteLine();
     }
     var totalSections = 0;
     var totalControls = 0;
