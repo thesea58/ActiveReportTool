@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<xs:schema id="KT011010-C01" targetNamespace="http://tempuri.org/KT011010-C01.xsd" elementFormDefault="qualified"
+	xmlns="http://tempuri.org/KT011010-C01.xsd" xmlns:mstns="http://tempuri.org/KT011010-C01.xsd"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="基本マスター" type="complexType1"></xs:element>
+	<xs:complexType name="complexType1">
+		<xs:sequence>
+			<xs:element name="端末番号" type="xs:string" />
+			<xs:element name="SEQ" type="xs:int" />
+			<xs:element name="台帳番号" type="xs:long" />
+			<xs:element name="枝番" type="xs:int" />
+			<xs:element name="事業所" type="xs:string" />
+			<xs:element name="事業所名称" type="xs:string" />
+			<xs:element name="部門区分" type="xs:string" />
+			<xs:element name="部門区分名称" type="xs:string" />
+			<xs:element name="項" type="xs:string" />
+			<xs:element name="項名称" type="xs:string" />
+			<xs:element name="目" type="xs:string" />
+			<xs:element name="目名称" type="xs:string" />
+			<xs:element name="節" type="xs:string" />
+			<xs:element name="節名称" type="xs:string" />
+			<xs:element name="取得年度" type="xs:string" />
+			<xs:element name="取得日付" type="xs:string" />
+      <xs:element name="資産コード" type="xs:string" />
+			<xs:element name="資産名称" type="xs:string" />
+      <xs:element name="住所コード" type="xs:string" />
+			<xs:element name="住所" type="xs:string" />
+      <xs:element name="摘要コード" type="xs:string" />
+			<xs:element name="摘要" type="xs:string" />
+			<xs:element name="数量" type="xs:double" />
+			<xs:element name="単位" type="xs:string" />
+			<xs:element name="工事取得原価" type="xs:long" />
+			<xs:element name="事務費按分額" type="xs:long" />
+			<xs:element name="取得価格" type="xs:long" />
+			<xs:element name="控除合計額" type="xs:long" />
+			<xs:element name="償却対象額" type="xs:long" />
+			<xs:element name="みなし区分1" type="xs:string" />
+			<xs:element name="みなし区分2" type="xs:string" />
+			<xs:element name="みなし区分3" type="xs:string" />
+			<xs:element name="控除名称1" type="xs:string" />
+			<xs:element name="控除名称2" type="xs:string" />
+			<xs:element name="控除名称3" type="xs:string" />
+			<xs:element name="その他1" type="xs:long" />
+			<xs:element name="その他2" type="xs:long" />
+			<xs:element name="その他3" type="xs:long" />		
+			<xs:element name="償却不要" type="xs:string" />
+			<xs:element name="開始日付" type="xs:string" />
+			<xs:element name="償却方法" type="xs:string" />
+			<xs:element name="償却方法名称" type="xs:string" />
+			<xs:element name="耐用年数" type="xs:int" />
+			<xs:element name="償却率" type="xs:double" />
+			<xs:element name="年間償却額" type="xs:long" />
+			<xs:element name="残存区分" type="xs:string" />
+			<xs:element name="残存区分名称" type="xs:string" />
+			<xs:element name="残存価格" type="xs:long" />
+			<xs:element name="所管課区分" type="xs:string" />
+			<xs:element name="所管課名称" type="xs:string" />
+			<xs:element name="取得区分" type="xs:string" />
+			<xs:element name="取得区分名称" type="xs:string" />
+			<xs:element name="施設区分" type="xs:string" />
+			<xs:element name="施設区分名称" type="xs:string" />
+			<xs:element name="工事番号" type="xs:string" />
+			<xs:element name="期首帳簿価格" type="xs:long" />
+			<xs:element name="期首減価償却累計額" type="xs:long" />
+			<xs:element name="当期償却額" type="xs:long" />
+			<xs:element name="期末帳簿価格" type="xs:long" />
+			<xs:element name="期末減価償却累計額" type="xs:long" />
+			<xs:element name="処理区分" type="xs:string" />
+      <xs:element name="処理区分名称" type="xs:string" />
+      <xs:element name="長期前受金" type="xs:long" />
+      <xs:element name="期首収益化累計額" type="xs:long" />
+      <xs:element name="期首償却未済高" type="xs:long" />
+      <xs:element name="当期収益化額" type="xs:long" />
+      <xs:element name="期末収益化累計額" type="xs:long" />
+      <xs:element name="期末償却未済高" type="xs:long" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="資産明細" type="complexType2"></xs:element>
+	<xs:complexType name="complexType2">
+		<xs:sequence>
+			<xs:element name="端末番号" type="xs:string" />
+			<xs:element name="台帳番号" type="xs:long" />
+			<xs:element name="枝番" type="xs:int" />
+			<xs:element name="事業所" type="xs:string" />
+			<xs:element name="明細SEQ" type="xs:int" />
+			<xs:element name="管種区分" type="xs:string" />
+			<xs:element name="管種名称" type="xs:string" />
+			<xs:element name="型式名称" type="xs:string" />
+			<xs:element name="口径" type="xs:int" />
+			<xs:element name="延長数" type="xs:double" />
+			<xs:element name="単位" type="xs:string" />
+			<xs:element name="金額" type="xs:long" />
+			<xs:element name="単価" type="xs:double" />
+			<xs:element name="構造名称" type="xs:string" />
+			<xs:element name="業者名称" type="xs:string" />
+		</xs:sequence>
+	</xs:complexType>
+  <xs:element name="長期前受金内訳" type="complexType3"></xs:element>
+  <xs:complexType name="complexType3">
+    <xs:sequence>
+      <xs:element name="端末番号" type="xs:string" />
+      <xs:element name="事業所" type="xs:string" />
+      <xs:element name="台帳番号" type="xs:long" />
+      <xs:element name="処理区分" type="xs:string" />
+      <xs:element name="内訳コード" type="xs:string" />
+      <xs:element name="内訳名称" type="xs:string" />
+      <xs:element name="金額" type="xs:long" />
+      <xs:element name="長期前受金" type="xs:long" />
+      <xs:element name="期首収益化累計額" type="xs:long" />
+      <xs:element name="期首償却未済高" type="xs:long" />
+      <xs:element name="当期収益化額" type="xs:long" />
+      <xs:element name="期末収益化累計額" type="xs:long" />
+      <xs:element name="期末償却未済高" type="xs:long" />
+    </xs:sequence>
+  </xs:complexType>
+	<xs:element name="ヘッダデータ" type="complexType4"></xs:element>
+	<xs:complexType name="complexType4">
+		<xs:sequence>
+			<xs:element name="端末番号" type="xs:string" />
+			<xs:element name="自治体コード" type="xs:string" />
+			<xs:element name="自治体名称" type="xs:string" />
+			<xs:element name="企業名称" type="xs:string" />
+			<xs:element name="元号" type="xs:string" />
+			<xs:element name="和暦1" type="xs:string" />
+			<xs:element name="和暦2" type="xs:string" />
+			<xs:element name="和暦3" type="xs:string" />
+			<xs:element name="和暦4" type="xs:string" />
+			<xs:element name="帳票ID" type="xs:string" />
+			<xs:element name="帳票名" type="xs:string" />
+			<xs:element name="備考1" type="xs:string" />
+			<xs:element name="備考2" type="xs:string" />
+			<xs:element name="備考3" type="xs:string" />
+			<xs:element name="備考4" type="xs:string" />
+			<xs:element name="備考5" type="xs:string" />
+			<xs:element name="見出区分" type="xs:string" />
+			<xs:element name="ページ印刷" type="xs:string" />
+			<xs:element name="ページ" type="xs:int" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
