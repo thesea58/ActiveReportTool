@@ -16,15 +16,34 @@ public partial class MainForm : Form
 	private readonly CodeGenerator _codeGenerator = new();
 
 	private readonly List<string> _loadedFiles = [];
+	private readonly List<string> _loadedFolders = [];
 	private readonly Dictionary<string, RpxDocument> _parsedDocuments = [];
 	private readonly Dictionary<string, GeneratedOutput> _generatedOutputs = [];
+	private static readonly Icon? AppIcon = LoadAppIcon();
 
 	public MainForm()
 	{
 		InitializeComponent();
+		if (AppIcon != null)
+			Icon = AppIcon;
 		this.DragEnter += MainForm_DragEnter;
 		this.DragDrop += MainForm_DragDrop;
 	}
+
+	private static Icon? LoadAppIcon()
+	{
+		try
+		{
+			using var iconStream = new MemoryStream(AppIconBase64.ToBytes());
+			return new Icon(iconStream);
+		}
+		catch
+		{
+			
+			return null;
+		}
+	}
+
 
 	// ────────────────── Open Files ──────────────────
 
@@ -60,6 +79,8 @@ public partial class MainForm : Form
 					"No Files", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				return;
 			}
+			if (!_loadedFolders.Contains(dlg.SelectedPath))
+				_loadedFolders.Add(dlg.SelectedPath);
 			AddFiles(files);
 		}
 	}
@@ -219,6 +240,7 @@ public partial class MainForm : Form
 	private void BtnClearAll_Click(object? sender, EventArgs e)
 	{
 		_loadedFiles.Clear();
+		_loadedFolders.Clear();
 		_parsedDocuments.Clear();
 		_generatedOutputs.Clear();
 		lstFiles.Items.Clear();
@@ -271,6 +293,70 @@ public partial class MainForm : Form
 		btnGenerate.Enabled = _loadedFiles.Count > 0;
 		btnSaveAll.Enabled = _generatedOutputs.Count > 0;
 		lblFileCount.Text = $"Files: {_loadedFiles.Count}";
+	}
+
+	private void ExitMenuItem_Click(object s, EventArgs e)
+	{
+		Close();
+	}
+
+	// ────────────────── Refresh ──────────────────
+
+	private void BtnRefresh_Click(object? sender, EventArgs e)
+	{
+		RefreshFolders();
+	}
+
+	private void RefreshFolders()
+	{
+		if (_loadedFolders.Count == 0)
+		{
+			lblStatus.Text = "No folders loaded. Open a folder first.";
+			return;
+		}
+
+		var newFiles = new List<string>();
+		var removedCount = 0;
+
+		// Xóa file không còn tồn tại
+		var missing = _loadedFiles.Where(f => !File.Exists(f)).ToList();
+		foreach (var f in missing)
+		{
+			var idx = _loadedFiles.IndexOf(f);
+			_loadedFiles.RemoveAt(idx);
+			lstFiles.Items.RemoveAt(idx);
+			_parsedDocuments.Remove(f);
+			_generatedOutputs.Remove(f);
+			removedCount++;
+		}
+
+		// Quét lại thư mục tìm file mới
+		foreach (var folder in _loadedFolders)
+		{
+			if (!Directory.Exists(folder))
+				continue;
+			foreach (var file in Directory.GetFiles(folder, "*.rpx").OrderBy(Path.GetFileName))
+			{
+				if (!_loadedFiles.Contains(file))
+					newFiles.Add(file);
+			}
+		}
+
+		if (newFiles.Count > 0)
+			AddFiles([.. newFiles]);
+
+		UpdateUI();
+		lblStatus.Text = $"Refreshed: +{newFiles.Count} new, -{removedCount} removed. Total: {_loadedFiles.Count}";
+	}
+
+	protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+	{
+		if (keyData == Keys.F5)
+		{
+			RefreshFolders();
+			return true;
+		}
+		return base.ProcessCmdKey(ref msg, keyData);
 	}
 
 	// ────────────────── Inner Types ──────────────────
