@@ -49,7 +49,7 @@ public class RpxDocument
 	public string DocumentName { get; set; } = string.Empty;
 	public string Version { get; set; } = string.Empty;
 	public List<RpxSection> Sections { get; set; } = [];
-
+	public string Script { get; set; } = string.Empty;
 	public override string ToString()
 	{
 		return $"RPX Document: {DocumentName} (v{Version}) with {Sections.Count} sections";

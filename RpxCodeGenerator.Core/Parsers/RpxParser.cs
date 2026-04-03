@@ -26,7 +26,7 @@ public class RpxParser
 
 		var rpxDoc = new RpxDocument
 		{
-			DocumentName = root.Attribute("DocumentName")?.Value ?? Path.GetFileNameWithoutExtension(filePath),
+			DocumentName = Path.GetFileNameWithoutExtension(filePath),
 			Version = root.Attribute("Version")?.Value ?? "Unknown"
 		};
 
@@ -40,6 +40,11 @@ public class RpxParser
 			}
 		}
 
+		var ScriptElement = root.Element("Script");
+		if (ScriptElement != null)
+		{
+			rpxDoc.Script = ScriptElement?.Value ?? "";
+		}
 		return rpxDoc;
 	}
 

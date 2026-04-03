@@ -70,10 +70,10 @@ public class CodeGenerator
 	/// </summary>
 	private void GenerateSection(RpxSection section)
 	{
-		var varName = char.ToLower(section.Name[0]) + section.Name.Substring(1);
+		var varName = section.Name[0] + section.Name.Substring(1);
 
 		WriteLine($"// {section.Type}: {section.Name}");
-		WriteLine($"Section {varName} = _report.Sections[\"{section.Name}\"];");
+		WriteLine($"Section {varName} = this.Sections[\"{section.Name}\"];");
 
 		if (section.Controls.Count > 0)
 		{
@@ -91,7 +91,7 @@ public class CodeGenerator
 	/// </summary>
 	private void GenerateControl(string sectionVarName, RpxControl control)
 	{
-		var controlVarName = char.ToLower(control.Name[0]) + control.Name.Substring(1);
+		var controlVarName = control.Name[0] + control.Name.Substring(1);
 		var controlClass = GetControlType(control);
 
 		WriteLine($"{controlClass} {controlVarName} = {sectionVarName}.Controls[\"{control.Name}\"] as {controlClass};");
@@ -157,6 +157,7 @@ public class CodeGenerator
 			"AR.Image" => "Image",
 			"AR.CheckBox" => "CheckBox",
 			"AR.ComboBox" => "ComboBox",
+			"AR.Subreport" => "Subreport",
 			_ => "ARControl"
 		};
 	}
@@ -186,19 +187,19 @@ public class CodeGenerator
 			if (section.Controls.Count == 0)
 				continue;
 
-			var sectionVarName = char.ToLower(section.Name[0]) + section.Name.Substring(1);
+			var sectionVarName = section.Name[0] + section.Name.Substring(1);
 			WriteLine($"/// <summary>Extract controls from {section.Name}</summary>");
 			WriteLine($"public void Extract{section.Name}Controls()");
 			WriteLine("{");
 			_indentLevel++;
 
-			WriteLine($"Section {sectionVarName} = _report.Sections[\"{section.Name}\"];");
+			WriteLine($"Section {sectionVarName} = this.Sections[\"{section.Name}\"];");
 			WriteLine();
 
 			var textBoxControls = section.Controls.Where(c => c.Type == "AR.Field" || c.Type == "AR.TextBox");
 			foreach (var control in textBoxControls)
 			{
-				var varName = char.ToLower(control.Name[0]) + control.Name.Substring(1);
+				var varName = control.Name[0] + control.Name.Substring(1);
 				WriteLine($"TextBox {varName} = {sectionVarName}.Controls[\"{control.Name}\"] as TextBox;");
 			}
 
@@ -207,7 +208,6 @@ public class CodeGenerator
 			WriteLine();
 		}
 
-		_indentLevel--;
 		WriteLine("}");
 
 		return _builder.ToString();
@@ -220,16 +220,28 @@ public class CodeGenerator
 	{
 		_builder.Clear();
 		_indentLevel = 0;
-
+		string namereport = rpxDoc.DocumentName;
+		string sys = namereport.Length >= 8  ? namereport.Substring(0, 1) : "";
+		string nsp = namereport.Length >= 8 ?
+							"K" + sys + namereport.Substring(2, 6)
+							: "NotFound";
 		WriteLine("// Auto-generated type-safe control extraction");
+		WriteLine("// Ver: 2026/03/31");
 		WriteLine("// Generated at: " + DateTime.Now);
 		WriteLine();
-		WriteLine("namespace YourNamespace.Reports;");
+		WriteLine("using GrapeCity.ActiveReports.SectionReportModel;");
+		WriteLine("using KKReport;");
+		WriteLine("using Section = GrapeCity.ActiveReports.SectionReportModel.Section;");
+		WriteLine("using TextAlignment = GrapeCity.ActiveReports.Document.Section.TextAlignment;");
+		WriteLine("using TextBox = GrapeCity.ActiveReports.SectionReportModel.TextBox;");
+		WriteLine("using Label = GrapeCity.ActiveReports.SectionReportModel.Label;");
 		WriteLine();
-		WriteLine("/// <summary>");
-		WriteLine("/// Auto-generated control accessor");
+		WriteLine($"namespace {nsp};");
+		WriteLine($"/// {namereport}帳票クラス");
+		WriteLine("/// レイアウトの読み込みおよびスクリプトのイベント紐付けを行う");
 		WriteLine("/// </summary>");
-		WriteLine($"public partial class {SanitizeClassName(rpxDoc.DocumentName)}Controls");
+
+		WriteLine($"public class {namereport}: ReportClass");
 		WriteLine("{");
 		_indentLevel++;
 
@@ -237,51 +249,87 @@ public class CodeGenerator
 
 		foreach (var section in rpxDoc.Sections)
 		{
-			if (section.Controls.Count == 0)
-				continue;
+			//if (section.Controls.Count == 0)
+			//	continue;
 
-			var sectionVarName = char.ToLower(section.Name[0]) + section.Name.Substring(1);
+			var sectionVarName = section.Name[0] + section.Name.Substring(1);
 			_indentLevel++;
+			WriteLine();
 
 			WriteLine($"private Section {sectionVarName};");
-			WriteLine();
 
 			var textBoxControls = section.Controls.Where(c => c.Type == "AR.Field" || c.Type == "AR.TextBox");
 			foreach (var control in textBoxControls)
 			{
-				var varName = char.ToLower(control.Name[0]) + control.Name.Substring(1);
+				var varName = control.Name[0] + control.Name.Substring(1);
 				WriteLine($"private TextBox {varName};");
 			}
-
+			// write subreport
+			var subreportControls = section.Controls.Where(c => c.Type == "AR.Subreport");
+			foreach (var control in subreportControls)
+			{
+				WriteLine($"private SubReport {control.Name};");
+			}
 			_indentLevel--;
-			WriteLine();
 		}
 		WriteLine("#endregion");
 		WriteLine();
+		//contructor
+
+		Write($@"public {namereport}()
+	{{
+		// クラス名をレポート名として取得する
+		string className = this.GetType().Name;
+		this.LoadLayout(Path.Combine(K{sys}.K{sys}cls.RPTパス, $""{{className}}.rpx""));
+
+		// イベントを紐付け (self = this)
+		this.AttachEvents();
+	}}
+
+	/// <summary>
+	/// IReportScript実装: イベントを設定する
+	/// </summary>
+	public void AttachEvents()
+	{{");
+		_indentLevel++;
+		WriteLine();
+
 		WriteLine("#region 各セクションおよびコントロール参照を取得");
 		foreach (var section in rpxDoc.Sections)
 		{
-			if (section.Controls.Count == 0)
-				continue;
+			// in ra section ke ca k hong co control trong no. 
+			//if (section.Controls.Count == 0)
+			//	continue;
 
-			var sectionVarName = char.ToLower(section.Name[0]) + section.Name.Substring(1);
-			_indentLevel++;
-
-			WriteLine($"{sectionVarName} = _report.Sections[\"{section.Name}\"];");
+			var sectionVarName = section.Name[0] + section.Name.Substring(1);
 			WriteLine();
+			WriteLine($"this.{sectionVarName} = this.Sections[\"{section.Name}\"];");
 
+			// write textbox
 			var textBoxControls = section.Controls.Where(c => c.Type == "AR.Field" || c.Type == "AR.TextBox");
 			foreach (var control in textBoxControls)
 			{
-				var varName = char.ToLower(control.Name[0]) + control.Name.Substring(1);
-				WriteLine($"{varName} = {sectionVarName}.Controls[\"{control.Name}\"] as TextBox;");
+				var varName = control.Name[0] + control.Name.Substring(1);
+				WriteLine($"this.{varName} = this.{sectionVarName}.Controls[\"{control.Name}\"] as TextBox;");
 			}
 
-			_indentLevel--;
-			WriteLine();
+			// write subreport
+			var subreportControls = section.Controls.Where(c => c.Type == "AR.Subreport");
+			foreach (var control in subreportControls)
+			{
+				var varName = control.Name;
+				WriteLine($"this.{varName} = this.{sectionVarName}.Controls[\"{control.Name}\"] as Subreport;");
+			}
 		}
-		WriteLine("#endregion");
+		_indentLevel--;
 
+		WriteLine("#endregion");
+		WriteLine();
+		WriteLine("// レポートイベントを登録（初期化・データ処理・書式設定）");
+		WriteLine("}");
+		WriteLine("#region RpxのScript | ActiveReportイベント定義");
+		WriteLine(rpxDoc.Script);
+		WriteLine("#endregion");
 		_indentLevel--;
 		WriteLine("}");
 
@@ -326,17 +374,17 @@ public class CodeGenerator
 			foreach (var control in section.Controls)
 			{
 				string controlType = (control.Type is "AR.Field" or "AR.TextBox")
-				? "TextBox"
-				: GetControlType(control);
+					? "TextBox"
+					: GetControlType(control);
 				string[] lsControlAccept = { "TextBox", "Subreport" };
 				if (controlType != null && lsControlAccept.Contains(controlType))
 				{
-								WriteLine($"{index}\t{control.Name}\t{controlType}\t{section.Name}");
-								index++;
+					WriteLine($"{index}\t{control.Name}\t{controlType}\t{section.Name}");
+					index++;
 				}
+
 			}
 		}
-
 		return _builder.ToString();
 	}
 
